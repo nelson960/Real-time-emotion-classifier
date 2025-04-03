@@ -1,10 +1,19 @@
 
 # 😃 Facial Emotion Recognition with MobileViTv2
 
-This project delivers a real-time **Facial Emotion Recognition (FER)** system using a fine-tuned **MobileViTv2** model on the **FANE dataset**. The model predicts 9 different emotions from facial images and runs seamlessly in a **Dockerized Streamlit application**.
+A real-time **Facial Emotion Recognition (FER)** system built with **MobileViTv2**, fine-tuned on the **FANE dataset**, and optimized for deployment on **constrained hardware** like the **MacBook Pro M2 Pro (16GB RAM)**.
 
 ---
+## 🌟 Highlights
 
+✅ Fine-tuned `MobileViTv2` for robust emotion recognition  
+✅ Real-time inference with **efficient resource usage**  
+✅ Designed for **edge deployment** on MacBooks and similar low-power devices  
+✅ Achieved **64.53% accuracy** and **0.6415 F1 score** on validation — **on just a MacBook Pro M2 Pro with 16GB RAM**  
+✅ Containerized with **Docker + Streamlit** for cross-platform deployment  
+✅ Webcam-ready using either native video device or browser-based Streamlit WebRTC
+
+---
 ## 🧠 Model Training Description
 
 This project leverages transfer learning and a progressive fine-tuning approach with **MobileViTv2** to recognize emotions from facial expressions. Below is a detailed description of the training pipeline:
@@ -18,38 +27,45 @@ This project leverages transfer learning and a progressive fine-tuning approach 
 - Verified for **class distribution consistency** across splits.
 - Contains images labeled with **9 emotion classes**.
 
-### 🔧 Training Workflow
+---
+### ⚙️ Improved Training Strategy
 
-#### 1. **Pretrained Model Loading**
-- Load `mobilevitv2_100` pretrained on ImageNet.
+The model uses **transfer learning** with advanced fine-tuning optimizations to deliver strong results even on constrained systems.
 
-#### 2. **Initial Freezing**
-- Freeze all backbone layers to preserve learned representations.
+#### 🔄 Gradual Layer Unfreezing
 
-#### 3. **Gradual Unfreezing**
-- At specific epochs, deeper layers are unfrozen to allow better task adaptation:
-  - **Stage 4**: Unfrozen at Epoch 0
-  - **Stage 3**: Epoch 1
-  - **Stage 2**: Epoch 3
-  - **Stage 1**: Epoch 5
+| Stage | Epoch | Layers Unfrozen |
+|-------|-------|------------------|
+| 4     | 0     | Classifier only  |
+| 3     | 1     | Deeper Blocks    |
+| 2     | 3     | Mid-Level Layers |
+| 1     | 5     | Full Model       |
 
-This strategy prevents catastrophic forgetting while fine-tuning.
+This progressive approach avoids overfitting and **preserves pretrained features** from ImageNet.
 
-#### 4. **Advanced Training Techniques**
+---
 
-- **Mixup Augmentation**: Soft-label image blending to improve generalization.
-- **Class-Balanced Focal Loss**: Focus on hard examples and manage emotion class imbalance.
-- **Gradient Accumulation**: Simulates larger batch size under memory constraints.
-- **Gradient Clipping**: Prevents exploding gradients in deep layers.
-- **Exponential Moving Average (EMA)**: Stabilizes training by averaging model weights.
-- **OneCycleLR**: Dynamic learning rate scheduling to accelerate convergence.
-- **Temperature Scaling**: Post-training confidence calibration.
+### 🛠️ Advanced Techniques Used
 
-#### ✅ Best Model Results (Saved at Epoch 47)
+| Technique                    | Purpose                                                                 |
+|-----------------------------|-------------------------------------------------------------------------|
+| ✅ Mixup Augmentation        | Regularization and better generalization                               |
+| ✅ Class-Balanced Focal Loss | Emphasize underrepresented emotions                                    |
+| ✅ Gradient Accumulation     | Simulated large batch size under 16GB RAM                              |
+| ✅ Gradient Clipping         | Prevent exploding gradients                                             |
+| ✅ EMA (Exponential Moving Avg) | Stabilize weight updates for better validation metrics            |
+| ✅ OneCycleLR Scheduler      | Dynamic learning rate for faster convergence                           |
+| ✅ Temperature Scaling       | Calibrate prediction confidence for post-training reliability           |
 
-- **Validation Accuracy**: 64.53%
-- **Weighted F1 Score**: 0.6415
-- **Loss**: 0.6118
+---
+
+### 📈 Results on MacBook Pro M2 Pro (16GB RAM)
+
+- **Best Checkpoint Epoch**: 47  
+- **Validation Accuracy**: `64.53%`  
+- **Weighted F1 Score**: `0.6415`  
+- **Validation Loss**: `0.6118`  
+- ✅ Achieved with **batch size optimization**, **gradient accumulation**, and **progressive unfreezing** under MacBook hardware constraints
 
 ---
 ## Running via Streamlit
