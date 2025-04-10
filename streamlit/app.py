@@ -7,6 +7,8 @@ import timm
 from torchvision import transforms
 from PIL import Image
 import time
+import requests
+import io
 
 # Load model
 @st.cache_resource
@@ -45,6 +47,7 @@ st.title("Real-Time Facial Emotion Recognition \U0001F9E0")
 model = load_model()
 
 # Start webcam capture
+st.subheader("Real-time Webcam Emotion Detection")
 run = st.checkbox('Start Camera')
 FRAME_WINDOW = st.image([])
 fps_text = st.empty()
@@ -94,3 +97,27 @@ while run and cap and cap.isOpened():
 
 if cap:
     cap.release()
+
+#Image upload section using FastAPI
+st.subheader("Upload image via FastAPI")
+uploadfile = st.file_uploader("Upload a face image...", type=["jpg", "jpeg", "png"])
+if uploadfile is not None:
+    image = Image.open(uploadfile).convert("RGB")
+    st.image(image, caption="Uploaded Image", use_container_width=True)
+
+    #Sent to FastAPI
+    with io.BytesIO() as img_bytes:
+        image.save(img_bytes, format='JPEG')
+        img_bytes.seek(0)
+        files = {"file": (uploadfile.name, img_bytes, "image/jpeg")}
+        try:
+            response = requests.post("http://localhost:8000/predict", files=files)
+            if response.status_code == 200:
+                data = response.json()
+                st.success(f"Pediction: {data['prediction']}")
+                st.write("Probabilities:")
+                st.json(data['probabilites'])
+            else:
+                st.error(f"Error from API: {response.text}")
+        except Exception as e :
+            st.error(f"Failed to connect to FastAPI: {e}")
