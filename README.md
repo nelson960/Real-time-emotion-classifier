@@ -72,6 +72,15 @@ This progressive approach avoids overfitting and **preserves pretrained features
 ```bash
 OPENCV_AVFOUNDATION_SKIP_AUTH=1 streamlit run streamlit/app.py
 ```
+
+## Running via FastAPI
+```bash
+uvicorn main:app --reload
+
+curl -X POST http://127.0.0.1:8000/predict \
+     -F "file=@/path/to/your/image.jpg"
+
+```
 ## 🚀 Deploy via Docker
 
 This project is fully containerized. Follow the steps below to build and run the app locally.
