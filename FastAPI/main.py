@@ -10,7 +10,7 @@ app = FastAPI(title="Facial Emotion Recognition API")
 emotion_labels = ['neutral', 'happy', 'sad', 'angry', 'fearful', 'disgusted', 'surprised', 'confused', 'calm']
 
 model = timm.create_model("mobilevitv2_100", pretrained=False, num_classes=9)
-model.load_state_dict(torch.load("/Users/nelson/py/paper_impl/emotion_classifier/models/best_model_ema_47.pth", map_location="cpu"))
+model.load_state_dict(torch.load("models/best_model_ema_47.pth", map_location="cpu"))
 model.eval()
 
 transform = transforms.Compose([
